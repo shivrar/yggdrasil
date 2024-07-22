@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 
@@ -28,6 +29,7 @@ target_compile_features(main_tree PUBLIC c_std_99 cxx_std_17)  # Require C99 and
 ament_target_dependencies(
   main_tree
   "rclcpp"
+  "rclcpp_lifecycle"
   "std_msgs"
   "behaviortree_cpp"
 )

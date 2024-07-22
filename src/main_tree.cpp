@@ -1,4 +1,11 @@
 #include <cstdio>
+
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
+#include "std_msgs/msg/string.hpp"
+
+
 #include "behaviortree_cpp/bt_factory.h"
 
 #include "dummy_nodes.h"
@@ -31,6 +38,25 @@ static const char* xml_text_sequence = R"(
  </root>
  )";
 
+// static const char* xml_text_reactive = R"(
+//
+//  <root BTCPP_format="4" >
+//
+//      <BehaviorTree ID="MainTree">
+//         <ReactiveSequence name="root">
+//             <BatteryOK/>
+//             <Sequence>
+//                 <SaySomething   message="mission started..." />
+//                 <MoveBase       goal="1;2;3"/>
+//                 <SaySomething   message="mission completed!" />
+//             </Sequence>
+//             <TreeTickOver/>
+//         </ReactiveSequence>
+//      </BehaviorTree>
+//
+//  </root>
+//  )";
+
 static const char* xml_text_reactive = R"(
 
  <root BTCPP_format="4" >
@@ -38,11 +64,8 @@ static const char* xml_text_reactive = R"(
      <BehaviorTree ID="MainTree">
         <ReactiveSequence name="root">
             <BatteryOK/>
-            <Sequence>
-                <SaySomething   message="mission started..." />
-                <MoveBase       goal="1;2;3"/>
-                <SaySomething   message="mission completed!" />
-            </Sequence>
+
+            <TreeTickOver/>
         </ReactiveSequence>
      </BehaviorTree>
 
@@ -63,6 +86,7 @@ int main(int argc, char ** argv)
     factory.registerSimpleCondition("BatteryOK", std::bind(CheckBattery));
     factory.registerNodeType<MoveBaseAction>("MoveBase");
     factory.registerNodeType<SaySomething>("SaySomething");
+    factory.registerSimpleCondition("TreeTickOver", std::bind(TreeTickOver));
 
     // Compare the state transitions and messages using either
     // xml_text_sequence and xml_text_reactive.
@@ -96,7 +120,7 @@ int main(int argc, char ** argv)
             // if still running, add some wait time
             if(status == NodeStatus::RUNNING)
             {
-                tree.sleep(std::chrono::milliseconds(100));
+                tree.sleep(std::chrono::milliseconds(1000));
             }
         }
 #endif

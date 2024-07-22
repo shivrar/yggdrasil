@@ -10,7 +10,7 @@ namespace DummyNodes
 using BT::NodeStatus;
 
 NodeStatus CheckBattery();
-
+NodeStatus TreeTickOver();
 NodeStatus CheckTemperature();
 NodeStatus SayHello();
 

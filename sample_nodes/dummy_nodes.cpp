@@ -16,6 +16,12 @@ BT::NodeStatus CheckBattery()
   return BT::NodeStatus::SUCCESS;
 }
 
+BT::NodeStatus TreeTickOver()
+{
+  std::cout << "[ TreeTickOver: OK ]" << std::endl;
+  return BT::NodeStatus::RUNNING;
+}
+
 BT::NodeStatus CheckTemperature()
 {
   std::cout << "[ Temperature: OK ]" << std::endl;
