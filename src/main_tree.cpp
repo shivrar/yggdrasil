@@ -64,13 +64,40 @@ static const char* xml_text_reactive = R"(
      <BehaviorTree ID="MainTree">
         <ReactiveSequence name="root">
             <BatteryOK/>
-
-            <TreeTickOver/>
+             <Sequence>
+                <SaySomething   message="Before sleep..." />
+                <Sleep msec="5000"/>
+                <SaySomething   message="mission started..." />
+                <Fibonacci       order="10"/>
+                <SaySomething   message="mission completed!" />
+             </Sequence>
+            <SaySomething   message="Tree ticked!" />
         </ReactiveSequence>
      </BehaviorTree>
 
  </root>
  )";
+
+// static const char* xml_text_reactive = R"(
+//
+//  <root BTCPP_format="4" >
+//
+//      <BehaviorTree ID="MainTree">
+//         <ReactiveSequence name="root">
+//             <BatteryOK/>
+//              <Sequence>
+//                 <SaySomething   message="Before sleep..." />
+//                 <SaySomething   message="mission started..." />
+//                 <Fibonacci       order="10"/>
+//                 <SaySomething   message="mission completed!" />
+//              </Sequence>
+//             <SaySomething   message="Tree ticked!" />
+//         </ReactiveSequence>
+//      </BehaviorTree>
+//
+//  </root>
+//  )";
+
 
 // clang-format on
 
@@ -78,14 +105,26 @@ using namespace DummyNodes;
 
 int main(int argc, char ** argv)
 {
-  (void) argc;
-  (void) argv;
+    (void) argc;
+    (void) argv;
+
+    rclcpp::init(argc, argv);
+
 
     BehaviorTreeFactory factory;
+
+
+    auto node = std::make_shared<rclcpp::Node>("bt_main_tree");
+    // provide the ROS node and the name of the action service
+    RosNodeParams params;
+    params.nh = node;
+    params.default_port_value = "fibonacci";
+    factory.registerNodeType<FibonacciAction>("Fibonacci", params);
 
     factory.registerSimpleCondition("BatteryOK", std::bind(CheckBattery));
     factory.registerNodeType<MoveBaseAction>("MoveBase");
     factory.registerNodeType<SaySomething>("SaySomething");
+    factory.registerNodeType<TimerNode>("Wait");
     factory.registerSimpleCondition("TreeTickOver", std::bind(TreeTickOver));
 
     // Compare the state transitions and messages using either
@@ -102,16 +141,16 @@ int main(int argc, char ** argv)
         auto tree = factory.createTreeFromText(xml_text);
 
         NodeStatus status = NodeStatus::IDLE;
-#if 0
+    #if 0
         // Tick the root until we receive either SUCCESS or RUNNING
         // same as: tree.tickRoot(Tree::WHILE_RUNNING)
         std::cout << "--- ticking\n";
         status = tree.tickWhileRunning();
         std::cout << "--- status: " << toStr(status) << "\n\n";
-#else
+    #else
         // If we need to run code between one tick() and the next,
         // we can implement our own while loop
-        while(status != NodeStatus::SUCCESS)
+        while(status != NodeStatus::SUCCESS && rclcpp::ok())
         {
             std::cout << "--- ticking\n";
             status = tree.tickOnce();
@@ -123,7 +162,9 @@ int main(int argc, char ** argv)
                 tree.sleep(std::chrono::milliseconds(1000));
             }
         }
-#endif
+    #endif
     }
+
+    rclcpp::shutdown();
     return 0;
 }

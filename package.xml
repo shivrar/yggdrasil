@@ -13,6 +13,9 @@
   <depend>rclcpp_lifecycle</depend>
   <depend>std_msgs</depend>
   <depend>behaviortree_cpp</depend>
+  <depend>behaviortree_ros2</depend>
+  <depend>rclcpp_components</depend>
+  <depend>action_tutorials_interfaces</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

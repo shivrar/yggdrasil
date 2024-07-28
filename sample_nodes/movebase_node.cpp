@@ -19,7 +19,7 @@ BT::NodeStatus MoveBaseAction::onStart()
 
   // We use this counter to simulate an action that takes a certain
   // amount of time to be completed (220 ms)
-  _completion_time = chr::system_clock::now() + chr::milliseconds(220);
+  _completion_time = chr::system_clock::now() + chr::milliseconds(5000);
 
   return BT::NodeStatus::RUNNING;
 }

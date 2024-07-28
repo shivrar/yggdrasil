@@ -57,7 +57,14 @@ public:
   // Any TreeNode with ports must have a constructor with this signature
   MoveBaseAction(const std::string& name, const BT::NodeConfig& config)
     : StatefulActionNode(name, config)
-  {}
+  {
+    std::cout << "MoveBaseAction::MoveBaseAction()" << std::endl;
+  }
+
+  ~MoveBaseAction()
+  {
+    std::cout << "MoveBaseAction::~MoveBaseAction()" << std::endl;
+  }
 
   // It is mandatory to define this static method.
   static BT::PortsList providedPorts()
