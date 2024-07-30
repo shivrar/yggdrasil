@@ -15,6 +15,27 @@ find_package(std_msgs REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(behaviortree_ros2 REQUIRED)
 
+add_library(${PROJECT_NAME}  STATIC
+        include/yggdrasil/bt_nodes.cpp)
+target_include_directories(${PROJECT_NAME}  PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+target_compile_definitions(${PROJECT_NAME} 
+        PRIVATE "ACTION_TUTORIALS_CPP_BUILDING_DLL")
+ament_target_dependencies(${PROJECT_NAME} 
+        "action_tutorials_interfaces"
+        "rclcpp"
+        "rclcpp_action"
+        "rclcpp_components")
+install(TARGETS
+        ${PROJECT_NAME} 
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin)
+
+
+ament_target_dependencies(${PROJECT_NAME}  behaviortree_cpp behaviortree_ros2)
+
 add_library(bt_sample_nodes STATIC
         sample_nodes/dummy_nodes.cpp
         sample_nodes/movebase_node.cpp )
@@ -38,16 +59,16 @@ install(TARGETS
 
 ament_target_dependencies(bt_sample_nodes behaviortree_cpp behaviortree_ros2)
 
-add_executable(main_tree src/main_tree.cpp)
-target_include_directories(main_tree PUBLIC
+add_executable(sample_tree src/sample_tree.cpp)
+target_include_directories(sample_tree PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
         sample_nodes
 )
-target_link_libraries(main_tree bt_sample_nodes)
-target_compile_features(main_tree PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_link_libraries(sample_tree bt_sample_nodes)
+target_compile_features(sample_tree PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 ament_target_dependencies(
-  main_tree
+  sample_tree
   "rclcpp"
   "action_tutorials_interfaces"
   "rclcpp_lifecycle"
@@ -56,8 +77,31 @@ ament_target_dependencies(
   "behaviortree_ros2"
 )
 
-install(TARGETS main_tree
+install(TARGETS sample_tree
   DESTINATION lib/${PROJECT_NAME})
+
+add_executable(main_tree src/main.cpp)
+target_include_directories(main_tree PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        include/yggdrasil
+        sample_nodes
+        ${PROJECT_NAME}
+)
+target_link_libraries(main_tree ${PROJECT_NAME} bt_sample_nodes)
+target_compile_features(main_tree PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+ament_target_dependencies(
+        main_tree
+        "rclcpp"
+        "action_tutorials_interfaces"
+        "rclcpp_lifecycle"
+        "std_msgs"
+        "behaviortree_cpp"
+        "behaviortree_ros2"
+)
+
+install(TARGETS main_tree
+        DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
