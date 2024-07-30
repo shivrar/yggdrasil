@@ -7,17 +7,20 @@
 #include "yggdrasil/bt_nodes.h"
 #include "dummy_nodes.h"
 
-auto xml_text_sequence = R"(
+auto xml_text_reactive = R"(
 
  <root BTCPP_format="4" >
 
      <BehaviorTree ID="MainTree">
-        <Sequence name="root">
+        <ReactiveSequence name="root">
             <BatteryOK/>
-            <SaySomething   message="mission started..." />
-            <MoveBase       goal="1;2;3"/>
-            <SaySomething   message="mission completed!" />
-        </Sequence>
+            <Sequence>
+                <SaySomething   message="mission started..." />
+                <MoveBase       goal="1;2;3"/>
+                <SaySomething   message="mission completed!" />
+            </Sequence>
+            <TreeTickOver/>
+        </ReactiveSequence>
      </BehaviorTree>
 
  </root>
@@ -36,7 +39,7 @@ int main(int argc, char **argv)
     factory.registerSimpleCondition("TreeTickOver", std::bind(yggdrasil::actions::TreeTickOver));
 
     yggdrasil::VehicleTree node("TreeNode");
-    node.SetTree(xml_text_sequence, factory);
+    node.SetTree(xml_text_reactive, factory);
     node.Spin();
     return 0;
 }
