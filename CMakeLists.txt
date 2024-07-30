@@ -12,6 +12,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(action_tutorials_interfaces REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(behaviortree_ros2 REQUIRED)
 
@@ -26,6 +27,7 @@ ament_target_dependencies(${PROJECT_NAME}
         "action_tutorials_interfaces"
         "rclcpp"
         "rclcpp_action"
+        "std_srvs"
         "rclcpp_components")
 install(TARGETS
         ${PROJECT_NAME} 
@@ -73,6 +75,7 @@ ament_target_dependencies(
   "action_tutorials_interfaces"
   "rclcpp_lifecycle"
   "std_msgs"
+  "std_srvs"
   "behaviortree_cpp"
   "behaviortree_ros2"
 )

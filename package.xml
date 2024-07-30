@@ -12,6 +12,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>behaviortree_cpp</depend>
   <depend>behaviortree_ros2</depend>
   <depend>rclcpp_components</depend>

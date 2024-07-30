@@ -15,6 +15,8 @@ auto xml_text_reactive = R"(
         <ReactiveSequence name="root">
             <BatteryOK/>
             <Sequence>
+                <CheckCommand   service_message="{service_message}"/>
+                <SaySomething   message="{service_message}" />
                 <SaySomething   message="mission started..." />
                 <MoveBase       goal="1;2;3"/>
                 <SaySomething   message="mission completed!" />
@@ -36,9 +38,10 @@ int main(int argc, char **argv)
     factory.registerNodeType<MoveBaseAction>("MoveBase");
     factory.registerNodeType<DummyNodes::SaySomething>("SaySomething");
     factory.registerNodeType<DummyNodes::TimerNode>("Wait");
-    factory.registerSimpleCondition("TreeTickOver", std::bind(yggdrasil::actions::TreeTickOver));
+    factory.registerSimpleCondition("TreeTickOver", std::bind(yggdrasil::nodes::TreeTickOver));
 
     yggdrasil::VehicleTree node("TreeNode");
+    RCLCPP_INFO(node.get_logger(), "Starting node");
     node.SetTree(xml_text_reactive, factory);
     node.Spin();
     return 0;
