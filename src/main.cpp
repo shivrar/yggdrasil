@@ -30,19 +30,11 @@ auto xml_text_reactive = R"(
 
 int main(int argc, char **argv)
 {
-    BehaviorTreeFactory factory;
-
     rclcpp::init(argc, argv);
-
-    factory.registerSimpleCondition("BatteryOK", std::bind(DummyNodes::CheckBattery));
-    factory.registerNodeType<MoveBaseAction>("MoveBase");
-    factory.registerNodeType<DummyNodes::SaySomething>("SaySomething");
-    factory.registerNodeType<DummyNodes::TimerNode>("Wait");
-    factory.registerSimpleCondition("TreeTickOver", std::bind(yggdrasil::nodes::TreeTickOver));
 
     yggdrasil::VehicleTree node("TreeNode");
     RCLCPP_INFO(node.get_logger(), "Starting node");
-    node.SetTree(xml_text_reactive, factory);
+    node.SetTree(xml_text_reactive);
     node.Spin();
     return 0;
 }

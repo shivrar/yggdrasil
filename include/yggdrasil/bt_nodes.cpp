@@ -30,7 +30,7 @@ void nodes::CheckCommand::onHalted()
     service_request_received_ = false;
 }
 
-    BT::NodeStatus nodes::CheckCommand::onRunning()
+BT::NodeStatus nodes::CheckCommand::onRunning()
 {
     if (service_request_received_)
     {
@@ -64,15 +64,12 @@ void VehicleTree::Spin()
     rclcpp::shutdown();
 }
 
-bool VehicleTree::SetTree(const std::string& xml_tree, BT::BehaviorTreeFactory &factory)
+bool VehicleTree::SetTree(const std::string& xml_tree)
 {
-    factory.registerBuilder<nodes::CheckCommand>("CheckCommand", [this](const std::string& name, const BT::NodeConfiguration& config) {
-            return std::make_unique<yggdrasil::nodes::CheckCommand>(name, config, static_cast<rclcpp::Node::SharedPtr>(this));
-        });
     bool ret_val = false;
     if(!xml_tree.empty())
     {
-        tree_ = std::make_unique<BT::Tree>(factory.createTreeFromText(xml_tree));
+        tree_ = std::make_unique<BT::Tree>(Singleton<BT::BehaviorTreeFactory>::getInstance().createTreeFromText(xml_tree));
         ret_val = true;
     }
     RCLCPP_INFO_STREAM(this->get_logger() , print_header_<<"SetTree(), successful");

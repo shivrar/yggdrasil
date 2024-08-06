@@ -11,11 +11,15 @@
 
 #include "action_tutorials_interfaces/action/fibonacci.hpp"
 
+#include "design_patterns/Singleton.h"
+
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "std_srvs/srv/trigger.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
 
+#include <movebase_node.h>
+#include "dummy_nodes.h"
 
 namespace yggdrasil {
 namespace nodes
@@ -56,7 +60,6 @@ namespace nodes
         std::string  service_message_;
         rclcpp::Node::SharedPtr node_;
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr service_;
-
     };
 }
 
@@ -67,6 +70,7 @@ public:
     print_header_(node_name+"::VehcileTree::"),
     rate_()
     {
+        auto factory = &Singleton<BT::BehaviorTreeFactory>::getInstance();
         if(!this->has_parameter("rate"))
         {
             rate_ = 2;
@@ -74,18 +78,24 @@ public:
         {
             this->get_parameter("rate", rate_);
         }
+        factory->registerSimpleCondition("BatteryOK", std::bind(DummyNodes::CheckBattery));
+        factory->registerNodeType<MoveBaseAction>("MoveBase");
+        factory->registerNodeType<DummyNodes::SaySomething>("SaySomething");
+        factory->registerNodeType<DummyNodes::TimerNode>("Wait");
+        factory->registerSimpleCondition("TreeTickOver", std::bind(yggdrasil::nodes::TreeTickOver));
+        factory->registerBuilder<nodes::CheckCommand>("CheckCommand", [this](const std::string& name, const BT::NodeConfiguration& config) {
+            return std::make_unique<yggdrasil::nodes::CheckCommand>(name, config, static_cast<SharedPtr>(this));
+        });
     }
 
     void Spin();
 
-    bool SetTree(const std::string&, BT::BehaviorTreeFactory &);
-
+    bool SetTree(const std::string&);
 
 private:
     std::unique_ptr<BT::Tree> tree_;
     std::string print_header_;
     double rate_; // [Hz]
-
 };
 
 } // yggdrasil

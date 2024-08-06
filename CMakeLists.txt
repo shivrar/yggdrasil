@@ -15,28 +15,7 @@ find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(behaviortree_ros2 REQUIRED)
-
-add_library(${PROJECT_NAME}  STATIC
-        include/yggdrasil/bt_nodes.cpp)
-target_include_directories(${PROJECT_NAME}  PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
-target_compile_definitions(${PROJECT_NAME} 
-        PRIVATE "ACTION_TUTORIALS_CPP_BUILDING_DLL")
-ament_target_dependencies(${PROJECT_NAME} 
-        "action_tutorials_interfaces"
-        "rclcpp"
-        "rclcpp_action"
-        "std_srvs"
-        "rclcpp_components")
-install(TARGETS
-        ${PROJECT_NAME} 
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin)
-
-
-ament_target_dependencies(${PROJECT_NAME}  behaviortree_cpp behaviortree_ros2)
+find_package(design_patterns REQUIRED)
 
 add_library(bt_sample_nodes STATIC
         sample_nodes/dummy_nodes.cpp
@@ -83,6 +62,31 @@ ament_target_dependencies(
 install(TARGETS sample_tree
   DESTINATION lib/${PROJECT_NAME})
 
+add_library(${PROJECT_NAME}  STATIC
+        include/yggdrasil/bt_nodes.cpp)
+target_link_libraries(${PROJECT_NAME} bt_sample_nodes)
+target_include_directories(${PROJECT_NAME}  PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+        sample_nodes)
+target_compile_definitions(${PROJECT_NAME}
+        PRIVATE "ACTION_TUTORIALS_CPP_BUILDING_DLL")
+ament_target_dependencies(${PROJECT_NAME}
+        "action_tutorials_interfaces"
+        "rclcpp"
+        "rclcpp_action"
+        "std_srvs"
+        "rclcpp_components"
+        "design_patterns")
+install(TARGETS
+        ${PROJECT_NAME}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin)
+
+
+ament_target_dependencies(${PROJECT_NAME}  behaviortree_cpp behaviortree_ros2)
+
 add_executable(main_tree src/main.cpp)
 target_include_directories(main_tree PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -101,6 +105,7 @@ ament_target_dependencies(
         "std_msgs"
         "behaviortree_cpp"
         "behaviortree_ros2"
+        "design_patterns"
 )
 
 install(TARGETS main_tree
