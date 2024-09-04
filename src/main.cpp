@@ -21,7 +21,7 @@ auto xml_text_reactive = R"(
                 <MoveBase       goal="1;2;3"/>
                 <SaySomething   message="mission completed!" />
             </Sequence>
-            <TreeTickOver/>
+            <ReturnRunning/>
         </ReactiveSequence>
      </BehaviorTree>
 

@@ -9,8 +9,6 @@
 #include "behaviortree_cpp/bt_factory.h"
 #include <behaviortree_ros2/bt_action_node.hpp>
 
-#include "action_tutorials_interfaces/action/fibonacci.hpp"
-
 #include "design_patterns/Singleton.h"
 
 #include "rclcpp/rclcpp.hpp"
@@ -24,9 +22,9 @@
 namespace yggdrasil {
 namespace nodes
 {
-    BT::NodeStatus inline TreeTickOver()
+    BT::NodeStatus inline ReturnRunning()
     {
-        std::cout << "[ TreeTickOver: OK ]" << std::endl;
+        std::cout << "[ ReturnRunning: OK ]" << std::endl;
         return BT::NodeStatus::RUNNING;
     }
 
@@ -78,13 +76,14 @@ public:
         {
             this->get_parameter("rate", rate_);
         }
-        factory->registerSimpleCondition("BatteryOK", std::bind(DummyNodes::CheckBattery));
+
+        factory->registerSimpleCondition("BatteryOK", [](TreeNode&) -> NodeStatus {return DummyNodes::CheckBattery();});
         factory->registerNodeType<MoveBaseAction>("MoveBase");
         factory->registerNodeType<DummyNodes::SaySomething>("SaySomething");
         factory->registerNodeType<DummyNodes::TimerNode>("Wait");
-        factory->registerSimpleCondition("TreeTickOver", std::bind(yggdrasil::nodes::TreeTickOver));
+        factory->registerSimpleCondition("ReturnRunning", [](TreeNode&) -> NodeStatus {return nodes::ReturnRunning();});
         factory->registerBuilder<nodes::CheckCommand>("CheckCommand", [this](const std::string& name, const BT::NodeConfiguration& config) {
-            return std::make_unique<yggdrasil::nodes::CheckCommand>(name, config, static_cast<SharedPtr>(this));
+            return std::make_unique<nodes::CheckCommand>(name, config, static_cast<SharedPtr>(this));
         });
     }
 

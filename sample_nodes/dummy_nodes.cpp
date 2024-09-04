@@ -16,9 +16,9 @@ BT::NodeStatus CheckBattery()
   return BT::NodeStatus::SUCCESS;
 }
 
-BT::NodeStatus TreeTickOver()
+BT::NodeStatus ReturnRunning()
 {
-  std::cout << "[ TreeTickOver: OK ]" << std::endl;
+  std::cout << "[ ReturnRunning: OK ]" << std::endl;
   return BT::NodeStatus::RUNNING;
 }
 

@@ -63,7 +63,8 @@ install(TARGETS sample_tree
   DESTINATION lib/${PROJECT_NAME})
 
 add_library(${PROJECT_NAME}  STATIC
-        include/yggdrasil/bt_nodes.cpp)
+        include/yggdrasil/bt_nodes.cpp
+        include/yggdrasil/base_action_node.h)
 target_link_libraries(${PROJECT_NAME} bt_sample_nodes)
 target_include_directories(${PROJECT_NAME}  PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

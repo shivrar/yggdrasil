@@ -50,7 +50,7 @@ static const char* xml_text_sequence = R"(
 //                 <MoveBase       goal="1;2;3"/>
 //                 <SaySomething   message="mission completed!" />
 //             </Sequence>
-//             <TreeTickOver/>
+//             <ReturnRunning/>
 //         </ReactiveSequence>
 //      </BehaviorTree>
 //
@@ -125,7 +125,7 @@ int main(int argc, char ** argv)
     factory.registerNodeType<MoveBaseAction>("MoveBase");
     factory.registerNodeType<SaySomething>("SaySomething");
     factory.registerNodeType<TimerNode>("Wait");
-    factory.registerSimpleCondition("TreeTickOver", std::bind(TreeTickOver));
+    factory.registerSimpleCondition("ReturnRunning", std::bind(ReturnRunning));
 
     // Compare the state transitions and messages using either
     // xml_text_sequence and xml_text_reactive.
